@@ -5,7 +5,8 @@
 
 __version__ = "0.0.1"
 AUTHOR = "Vanessa Sochat"
-NAME = "symbolator"
+AUTHOR_EMAIL = "vsoch@users.noreply.github.com"
+NAME = "symbolator-python"
 PACKAGE_URL = "https://github.com/buildsi/symbolator"
 KEYWORDS = "abi, compatibility, symbols"
 DESCRIPTION = "Assess compatibility of two binaries based on symbols."

@@ -1,7 +1,8 @@
 .eggs
-symbolator.egg-info
+symbolator_python.egg-info
 math-client
 libmath-v1.so
 libmath-v2.so
 __pycache__
 env
+dist

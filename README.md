@@ -19,7 +19,7 @@ $ pip install -e .
 or from Pypi:
 
 ```bash
-$ pip install symbolator
+$ pip install symbolator-python
 ```
 
 ### Generate Symbols
