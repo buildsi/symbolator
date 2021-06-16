@@ -83,8 +83,15 @@ the test:
 
 ```bash
 $ symbolator compare math-client libmath-v1.so libmath-v2.so
+% binary           : math-client
+% working library  : libmath-v1.so
+% contender library: libmath-v2.so
+Missing Symbol Count: 1
+Missing Symbols:
+['/home/vanessa/Desktop/Code/symbolator/examples/cpp/math-client', '/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v2.so', '_ZN11MathLibrary10Arithmetic3AddEdd']
 ```
 
+Note that this is the right answer for the example - we are missing that symbol!
 By default this uses [is_compatible.lp](symbolator/facts/is_compatible.lp)
 If you just want to dump symbols to use with some other logic program you
 can do:

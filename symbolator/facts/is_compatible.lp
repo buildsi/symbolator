@@ -112,6 +112,7 @@ are_compatible()
 #show is_main/1.
 #show is_library/1.
 #show is_needed/1.
+#show missing_symbols/3.
 #show get_architecture/1.
 #show architecture_count/1.
 #show count_missing_symbols/1.

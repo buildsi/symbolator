@@ -143,6 +143,7 @@ class Result(object):
     """
     Result of an ASP solve.
     """
+
     def __init__(self, asp=None):
         self.asp = asp
         self.satisfiable = None
@@ -246,7 +247,6 @@ class PyclingoDriver(object):
 
         timer = Timer()
         self.control = clingo.Control()
-        self.control.ground([("base", [])])
 
         # set up the problem -- this generates facts and rules
         with self.control.backend() as backend:
@@ -266,6 +266,7 @@ class PyclingoDriver(object):
         for logic_program in logic_programs:
             self.control.load(logic_program)
         timer.phase("load")
+        self.control.ground([("base", [])])
 
         # With a grounded program, we can run the solve.
         result = Result()
@@ -303,11 +304,9 @@ class PyclingoDriver(object):
 
         if result.satisfiable:
             min_cost, best_model = min(models)
-            # print(best_model)
-            tuples = [
-                (sym.name, [stringify(a) for a in sym.arguments]) for sym in best_model
-            ]
-            result.answers.append((list(min_cost)))
+            result.answers = {
+                sym.name: [stringify(a) for a in sym.arguments] for sym in best_model
+            }
 
         elif cores:
             symbols = dict((a.literal, a.symbol) for a in self.control.symbolic_atoms)
@@ -315,7 +314,7 @@ class PyclingoDriver(object):
                 core_symbols = []
                 for atom in core:
                     sym = symbols[atom]
-                    if sym.name == "rule":
+                    if sym.name == "missing_symbol":
                         sym = sym.arguments[0].string
                     core_symbols.append(sym)
                 result.cores.append(core_symbols)
@@ -323,7 +322,7 @@ class PyclingoDriver(object):
         if timers:
             timer.write()
             print()
- 
+
         # statistics
         # pprint.pprint(self.control.statistics)
 

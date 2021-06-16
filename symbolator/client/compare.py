@@ -57,7 +57,10 @@ def is_compatible(args, parser, extra, subparser):
         logic_programs=get_facts("is_compatible.lp"),
         facts_only=args.dump,
     )
-    if result.satisfiable:
-        print("Compatible")
-    else:
-        print("Not Compatible")
+
+    # Don't print any more if we are just dumping
+    if args.dump:
+        return
+
+    print("Missing Symbol Count: %s" % result.answers["count_missing_symbols"][0])
+    print("Missing Symbols:\n%s" % result.answers["missing_symbols"])
