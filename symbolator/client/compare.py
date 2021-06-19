@@ -66,12 +66,17 @@ def is_compatible(args, parser, extra, subparser):
         return
 
     if args.json:
+        if (
+            "count_missing_symbols" in result.answers
+            and result.answers.count_missing_symbols
+        ):
+            missing_symbols = result.answers["count_missing_symbols"][0]
         data = {
             "binary": corpora[0].path,
             "library_working": corpora[1].path,
             "library_contender": corpora[2].path,
-            "missing_symbols": result.answers["missing_symbols"],
-            "count_missing_symbols": result.answers["count_missing_symbols"][0],
+            "missing_symbols": result.answers.get("missing_symbols", []),
+            "count_missing_symbols": missing_symbols,
         }
         print(json.dumps(data, indent=4))
     else:
