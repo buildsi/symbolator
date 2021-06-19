@@ -105,6 +105,23 @@ can do:
 $ symbolator compare --dump math-client libmath-v1.so libmath-v2.so
 ```
 
+Or to get json of just the answer:
+
+```bash
+$ symbolator compare --json math-client libmath-v1.so libmath-v2.so 
+{
+    "binary": "/home/vanessa/Desktop/Code/symbolator/examples/cpp/math-client",
+    "library_working": "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v1.so",
+    "library_contender": "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v2.so",
+    "missing_symbols": [
+        "/home/vanessa/Desktop/Code/symbolator/examples/cpp/math-client",
+        "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v2.so",
+        "_ZN11MathLibrary10Arithmetic3AddEdd"
+    ],
+    "count_missing_symbols": "1"
+}
+```
+
 ### Container Install
 
 You can also build symbolator into a container!
