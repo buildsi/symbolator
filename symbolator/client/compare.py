@@ -66,9 +66,11 @@ def is_compatible(args, parser, extra, subparser):
         return
 
     if args.json:
+
+        missing_symbols = 0
         if (
             "count_missing_symbols" in result.answers
-            and result.answers.count_missing_symbols
+            and result.answers['count_missing_symbols']
         ):
             missing_symbols = result.answers["count_missing_symbols"][0]
         data = {
