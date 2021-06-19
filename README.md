@@ -51,8 +51,13 @@ If you want to include system symbols (libraries that are linked to this library
 $ symbolator generate --system-libs libtcl8.6.so 
 ```
 
-Currently the output is in ASP for [clingo](https://potassco.org/clingo/) because this is what we need.
-Other output formats could be added if desired.
+Currently the default output is in ASP for [clingo](https://potassco.org/clingo/) because this is what we need.
+If you want json output:
+
+```bash
+$ symbolator generate --json libtcl8.6.so
+```
+
 
 ### Assess Compatibility
 

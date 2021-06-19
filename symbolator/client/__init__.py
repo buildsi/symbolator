@@ -65,6 +65,15 @@ def get_parser():
         action="store_true",
     )
 
+    # Either command can accept json
+    for command in [generate, compare]:
+        command.add_argument(
+            "--json",
+            dest="json",
+            help="If generating facts, dump as json instead of ASP.",
+            default=False,
+            action="store_true",
+        )
     return parser
 
 
