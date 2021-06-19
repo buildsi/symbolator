@@ -6,6 +6,7 @@
 from symbolator.corpus import Corpus
 from symbolator.asp import PyclingoDriver, ABICompatSolverSetup
 from symbolator.facts import get_facts
+import json
 import os
 import sys
 
@@ -40,9 +41,11 @@ def is_compatible(args, parser, extra, subparser):
     if len(paths) != 3:
         sys.exit("You must provide: <binary> <working-lib> <contender-lib>")
 
-    print("% " + "binary           : %s" % args.binary)
-    print("% " + "working library  : %s" % args.libs[0])
-    print("% " + "contender library: %s" % args.libs[1])
+    # No pretty printing if we are exporting json
+    if not args.json:
+        print("% " + "binary           : %s" % args.binary)
+        print("% " + "working library  : %s" % args.libs[0])
+        print("% " + "contender library: %s" % args.libs[1])
 
     corpora = []
     for path in paths:
@@ -53,7 +56,7 @@ def is_compatible(args, parser, extra, subparser):
     result = driver.solve(
         setup,
         corpora,
-        dump=args.dump,
+        dump=args.dump or not args.json,
         logic_programs=get_facts("is_compatible.lp"),
         facts_only=args.dump,
     )
@@ -62,5 +65,15 @@ def is_compatible(args, parser, extra, subparser):
     if args.dump:
         return
 
-    print("Missing Symbol Count: %s" % result.answers["count_missing_symbols"][0])
-    print("Missing Symbols:\n%s" % result.answers["missing_symbols"])
+    if args.json:
+        data = {
+            "binary": corpora[0].path,
+            "library_working": corpora[1].path,
+            "library_contender": corpora[2].path,
+            "missing_symbols": result.answers["missing_symbols"],
+            "count_missing_symbols": result.answers["count_missing_symbols"][0],
+        }
+        print(json.dumps(data, indent=4))
+    else:
+        print("Missing Symbol Count: %s" % result.answers["count_missing_symbols"][0])
+        print("Missing Symbols:\n%s" % result.answers["missing_symbols"])
