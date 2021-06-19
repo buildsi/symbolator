@@ -497,37 +497,6 @@ class ABICompatSolverSetup:
                 )
             )
 
-            # Not included (and we could add?)
-            # virtual address where system transfers control, if no entry, will find 0
-            # 'e_entry': 4160, <-- this is likely important
-
-            # program header table's file offset (bytes), 0 if none
-            # 'e_phoff': 64,
-
-            # section header table's offset, also in bytes (0 if none)
-            # 'e_shoff': 15672,
-
-            # processor-specific flags associated with the file (0 if none)
-            # 'e_flags': 0,
-
-            # elf header size in bytes
-            # 'e_ehsize': 64,
-
-            # size in bytes of one entry in file's program header
-            # 'e_phentsize': 56,
-
-            # number of entries in program header table
-            # 'e_phnum': 11,
-
-            # section header's size in bytes
-            # 'e_shentsize': 64,
-
-            # number of entries in section header table
-            # 'e_shnum': 30,
-
-            # section header table index of entry associated with section name string table
-            # 'e_shstrndx': 29
-
     def get_system_corpora(self, corpora):
         """
         Get a list of corpora for system corpora
@@ -581,6 +550,43 @@ class ABICompatSolverSetup:
         # Add system corpora to elf symbols
         if system_libs:
             self.generate_elf_symbols(self.get_system_corpora([corpus]))
+
+    def get_json(self, corpus, system_libs=False):
+        """
+        Get json symbols and metadata instead.
+        """
+        assert corpus.exists()
+
+        data = {"corpus": {}}
+        hdr = corpus.elfheader
+
+        # Corpus metadata
+        data["corpus"]["metadata"] = {
+            "path": corpus.path,
+            "corpus_name": os.path.basename(corpus.path),
+            "corpus_soname": corpus.soname,
+            "corpus_elf_class": hdr["e_ident"]["EI_CLASS"],
+            "corpus_data_encoding": hdr["e_ident"]["EI_DATA"],
+            "corpus_file_version": hdr["e_ident"]["EI_VERSION"],
+            "corpus_elf_osabi": hdr["e_ident"]["EI_OSABI"],
+            "corpus_abiversion": hdr["e_ident"]["EI_ABIVERSION"],
+            "corpus_elf_type": hdr["e_type"],
+            "corpus_elf_machine": hdr["e_machine"],
+            "corpus_elf_version": hdr["e_version"],
+        }
+
+        # Needed
+        data["corpus"]["needed"] = corpus.dynamic_tags.get("needed", [])
+
+        # Elf symbols
+        data["corpus"]["symbols"] = corpus.elfsymbols
+
+        # Add system corpora to elf symbols
+        if system_libs:
+            data["corpus"]["system_libs"] = {}
+            for lib in self.get_system_corpora([corpus]):
+                data["corpus"]["system_libs"][lib.path] = lib.elfsymbols
+        return data
 
     def compat_setup(self, driver, corpora):
         """
