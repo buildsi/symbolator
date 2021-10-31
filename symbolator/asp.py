@@ -329,9 +329,9 @@ class PyclingoDriver(object):
         return result
 
 
-class ABICompatSolverSetup:
+class ABISolverBase:
     """
-    Class to set up and run an ABI Compatability Solver.
+    Base class with shared functions
     """
 
     def generate_elf_symbols(self, corpora, prefix=""):
@@ -343,7 +343,6 @@ class ABICompatSolverSetup:
         symbol_type("_ZN11MathLibrary10Arithmetic8MultiplyEdd", "STT_FUNC").
         symbol_binding("_ZN11MathLibrary10Arithmetic8MultiplyEdd", "STB_FUNC").
         symbol_attr("_ZN11MathLibrary10Arithmetic8MultiplyEdd", "STV_default").
-
         """
         # If we have a prefix, add a spacer
         prefix = "%s_" % prefix if prefix else ""
@@ -588,6 +587,12 @@ class ABICompatSolverSetup:
                 data["corpus"]["system_libs"][lib.path] = lib.elfsymbols
         return data
 
+
+class ABICompatSolverSetup(ABISolverBase):
+    """
+    Class to set up and run a compatibility check for a binary and two libs.
+    """
+
     def compat_setup(self, driver, corpora):
         """
         Generate an ASP program with relevant constraints for a binary
@@ -633,6 +638,46 @@ class ABICompatSolverSetup:
 
         # Generate the same for the known working library, but with a prefix
         self.generate_elf_symbols([working], prefix="needed")
+
+        # Add system corpora to elf symbols
+        self.generate_elf_symbols(self.get_system_corpora(corpora))
+
+
+class ABICompareSolverSetup(ABISolverBase):
+    """
+    Class to set up and run a comparison between two libraries
+    """
+
+    def compat_setup(self, driver, corpora):
+        """
+        Arguments:
+            corpora: [corpusA, corpusB]
+            corpusB (corpus.Corpus): the first library corpus
+            corpusB (corpus.Corpus): the second library corpus
+        """
+        # preliminary checks
+        for corpus in corpora:
+            assert corpus.exists()
+
+        libA, libB = corpora
+
+        # driver is used by all the functions below to add facts and
+        # rules to generate an ASP program.
+        self.gen = driver
+
+        self.gen.h1("Corpus Facts")
+
+        self.gen.fact(fn.is_libA(libA.path))
+        self.gen.fact(fn.is_libB(libB.path))
+
+        # Generate high level corpus metadata facts (e.g., header)
+        self.generate_corpus_metadata(corpora)
+
+        # Dynamic libraries that are needed
+        self.generate_needed(corpora)
+
+        # generate all elf symbols (might be able to make this smaller set)
+        self.generate_elf_symbols(corpora)
 
         # Add system corpora to elf symbols
         self.generate_elf_symbols(self.get_system_corpora(corpora))

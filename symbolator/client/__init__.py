@@ -38,13 +38,22 @@ def get_parser():
 
     compare = subparsers.add_parser(
         "compare",
-        help="Compare a known working binary and library to a contender library",
+        help="Compare symbols between two libraries.",
     )
-    compare.add_argument("binary", help="Main binary of interest")
     compare.add_argument(
+        "libs", help="Two libraries (same but different versions) to compare", nargs=2
+    )
+
+    # Assess compatibility
+    compat = subparsers.add_parser(
+        "compat",
+        help="Assess compatibility of a known working binary and library to a contender library",
+    )
+    compat.add_argument("binary", help="Main binary of interest")
+    compat.add_argument(
         "libs", help="Working and contender library, in that order", nargs=2
     )
-    compare.add_argument(
+    compat.add_argument(
         "--dump",
         dest="dump",
         help="Dump asp to stdout instead",
@@ -66,7 +75,7 @@ def get_parser():
     )
 
     # Either command can accept json
-    for command in [generate, compare]:
+    for command in [generate, compat, compare]:
         command.add_argument(
             "--json",
             dest="json",
@@ -115,8 +124,10 @@ def run():
                 helper = subparser
                 break
 
-    if args.command == "compare":
-        from .compare import is_compatible as main
+    if args.command == "compat":
+        from .compat import is_compatible as main
+    elif args.command == "compare":
+        from .compare import compare_libs as main
     elif args.command == "generate":
         from .generate import generate as main
 

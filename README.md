@@ -58,8 +58,60 @@ If you want json output:
 $ symbolator generate --json libtcl8.6.so
 ```
 
+### Compare Libraries (compare)
 
-### Assess Compatibility
+If you have two libraries of different versions, a simple comparison will just determine
+if any symbols or arguments have changed. To do this, we just need the "same" library
+of two different versions. Let's first make the examples:
+
+```bash
+$ cd examples/cpp
+$ make
+```
+
+to generate:
+
+ - libmath-v1.so: an original library
+ - libmath-v2.so: a changed library
+
+Now let's run compare:
+
+```bash
+$ symbolator compare libmath-v1.so libmath-v2.so
+```
+```
+...
+{
+    "is_libA": [
+        "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v1.so"
+    ],
+    "is_libB": [
+        "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v2.so"
+    ],
+    "symbol_is_missing": [
+        "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v1.so",
+        "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v2.so",
+        "MathLibrary.cpp"
+    ],
+    "corpus_name_changed": [
+        "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v1.so",
+        "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v2.so",
+        "libmath-v1.so",
+        "libmath-v2.so"
+    ]
+}
+```
+
+Or again just the json:
+
+```
+$ symbolator compare libmath-v1.so libmath-v2.so --json
+```
+
+As an alternative, I'm going to be adding an ability to parse output from [Smeagle](https://github.com/buildsi/Smeagle) or [gosmeagle](https://github.com/vsoch/gosmeagle) (not developed yet).
+
+
+### Assess Compatibility (compat)
 
 To assess compatibility, we will need:
 
@@ -87,7 +139,7 @@ but we should see a different symbol (mangled string) for C++. To run
 the test:
 
 ```bash
-$ symbolator compare math-client libmath-v1.so libmath-v2.so
+$ symbolator compat math-client libmath-v1.so libmath-v2.so
 % binary           : math-client
 % working library  : libmath-v1.so
 % contender library: libmath-v2.so
@@ -102,13 +154,13 @@ If you just want to dump symbols to use with some other logic program you
 can do:
 
 ```bash
-$ symbolator compare --dump math-client libmath-v1.so libmath-v2.so
+$ symbolator compat --dump math-client libmath-v1.so libmath-v2.so
 ```
 
 Or to get json of just the answer:
 
 ```bash
-$ symbolator compare --json math-client libmath-v1.so libmath-v2.so 
+$ symbolator compat --json math-client libmath-v1.so libmath-v2.so 
 {
     "binary": "/home/vanessa/Desktop/Code/symbolator/examples/cpp/math-client",
     "library_working": "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v1.so",
@@ -144,7 +196,7 @@ The examples are built into the container for easy testing.
 
 ```bash
 $ cd examples/cpp
-$ symbolator compare math-client libmath-v1.so libmath-v2.so 
+$ symbolator compat math-client libmath-v1.so libmath-v2.so 
 % binary           : math-client
 % working library  : libmath-v1.so
 % contender library: libmath-v2.so
