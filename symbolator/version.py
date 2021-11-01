@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
-__version__ = "0.0.15"
+__version__ = "0.0.16"
 AUTHOR = "Vanessa Sochat"
 AUTHOR_EMAIL = "vsoch@users.noreply.github.com"
 NAME = "symbolator-python"
@@ -17,6 +17,7 @@ LICENSE = "LICENSE"
 
 INSTALL_REQUIRES = (
     ("pyelftools", {"min_version": None}),
+    ("jsonschema", {"min_version": None}),
     ("clingo", {"min_version": None}),
     ("six", {"min_version": None}),
 )
