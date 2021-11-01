@@ -164,13 +164,13 @@ class Result(object):
 
 
 class PyclingoDriver:
-    def __init__(self, cores=True, asp=None, out=None):
+    def __init__(self, cores=True, out=None):
         """Driver for the Python clingo interface.
 
         Arguments:
             cores (bool): whether to generate unsatisfiable cores for better
                 error reporting.
-            asp (file-like): optional stream to write a text-based ASP program
+            out (file-like): optional stream to write a text-based ASP program
                 for debugging or verification.
         """
         global clingo
@@ -179,6 +179,7 @@ class PyclingoDriver:
         else:
             self.devnull()
         self.cores = cores
+        self.assumptions = []
 
     def devnull(self):
         self.f = open(os.devnull, "w")

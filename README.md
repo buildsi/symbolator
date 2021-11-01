@@ -143,7 +143,7 @@ $ symbolator compat math-client libmath-v1.so libmath-v2.so
 % contender library: libmath-v2.so
 Missing Symbol Count: 1
 Missing Symbols:
-['/home/vanessa/Desktop/Code/symbolator/examples/cpp/math-client', '/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v2.so', '_ZN11MathLibrary10Arithmetic3AddEdd']
+['math-client', 'libmath-v2.so', '_ZN11MathLibrary10Arithmetic3AddEdd']
 ```
 
 Note that this is the right answer for the example - we are missing that symbol!
