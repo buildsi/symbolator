@@ -16,7 +16,7 @@ fields = {
             "name": {"type": "string"},
             "class": {"type": "string"},
             "type": {"type": "string"},
-            "size": {"type": "string"},
+            "size": {"type": ["string", "number"]},
             # TODO should we add validation of when fields is allowed?
             # This indicates that fields can be recursive
             "fields": {"$ref": "#"},
@@ -32,7 +32,7 @@ underlying_type = {
         "name": {"type": "string"},
         "class": {"type": "string"},
         "type": {"type": "string"},
-        "size": {"type": "string"},
+        "size": {"type": ["string", "number"]},
         "fields": fields,
     },
 }
@@ -68,12 +68,12 @@ model_schema = {
                                         "indirections": {"type": ["string", "null"]},
                                         "class": {"type": "string"},
                                         "type": {"type": "string"},
-                                        "size": {"type": "string"},
+                                        "size": {"type": ["string", "number"]},
                                         "location": {"type": "string"},
                                         "fields": fields,
                                         "underlying_type": underlying_type,
                                         "direction": {
-                                            "type": "string",
+                                            "type": ["string", "number"],
                                             "enum": ["import", "export", "unknown"],
                                         },
                                     },

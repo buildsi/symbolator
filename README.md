@@ -190,8 +190,16 @@ $ gosmeagle parse ../cpp/libmath-v2.so --pretty > libmath-v2.so.json
 We can then run symbolator to use the json to do a stability test.
 
 ```bash
-$ symbolator stability-test examples/smeagle/libmath-v1.so.json examples/smeagle/libmath-v2.so.json
+$ symbolator stability-test examples/smeagle/libmath-v1.so.json examples/smeagle/libmath-v2.so.json --detail
+Libraries are not stable: 0 missing exports, 2 missing_imports
+
+Missing Imports
+---------------
+ _ZN11MathLibrary10Arithmetic3AddEdd Basic %rdi 0
+ _ZN11MathLibrary10Arithmetic3AddEdd Basic %rsi 0
 ```
+
+This can be used programatically to get json output as well.
 
 ### Container Install
 

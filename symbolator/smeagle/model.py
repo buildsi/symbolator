@@ -19,7 +19,7 @@ import shutil
 import clingo
 
 from symbolator.facts import get_facts
-from symbolator.asp import AspFunctionBuilder, Result, PyclingoDriver
+from symbolator.asp import AspFunction, AspFunctionBuilder, Result, PyclingoDriver
 from symbolator.utils import read_json
 
 from .schema import model_schema
@@ -168,15 +168,17 @@ class StabilitySolver(SolverBase):
         self.driver = SmeagleClingoDriver()
         self.setup = StabilitySolverSetup(lib1, lib2)
 
-    def solve(self, logic_programs, detail=False):
+    def solve(self, logic_programs, detail=False, return_result=False):
         """
         Run the solve
         """
         result = self.driver.solve(self.setup, logic_programs=logic_programs)
+        if return_result:
+            return result
         missing_imports = result.answers.get("missing_imports", [])
         missing_exports = result.answers.get("missing_exports", [])
         if missing_imports or missing_exports:
-            logger.info(
+            print(
                 "Libraries are not stable: %s missing exports, %s missing_imports"
                 % (len(missing_exports), len(missing_imports))
             )
@@ -253,6 +255,7 @@ class GeneratorBase:
                 # If the param has fields, continue printing until we are done
                 fields = param["underlying_type"].get("fields", []) or fields
 
+            # We are skipping locations for now - not correct
             # Location and direction are always with the original parameter
             self.gen.fact(
                 fn.abi_typelocation(
@@ -367,21 +370,17 @@ class SmeagleRunner:
         self.stability_lp = get_facts("stability.lp")
         self.records = {}
 
-    def generate_facts(self, lib):
+    def generate_facts(self):
         """
         Generate facts for one entry.
         """
-        # Assume basename of lib is in database (hash and package name)
-        data = self.get(os.path.basename(lib))
+        facts = []
+        for name, data in self.records.items():
+            setup = FactGenerator(name)
+            facts.append(setup.solve())
+        return facts
 
-        # Cut out early if we don't have the records
-        if not data:
-            sys.exit("Cannot find database entry for %s." % lib)
-
-        setup = FactGenerator(data[0])
-        setup.solve()
-
-    def stability_test(self, detail=False, out=None):
+    def stability_test(self, detail=False, out=None, return_result=False):
         """
         Run the stability test for two entries.
         """
@@ -394,7 +393,9 @@ class SmeagleRunner:
             sys.exit("Two libraries are required to be loaded for a stability test.")
 
         setup = StabilitySolver(*list(self.records.values()))
-        setup.solve(logic_programs=self.stability_lp, detail=detail)
+        return setup.solve(
+            logic_programs=self.stability_lp, detail=detail, return_result=return_result
+        )
 
     def load(self, path):
         """
