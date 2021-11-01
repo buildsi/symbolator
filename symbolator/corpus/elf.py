@@ -10,6 +10,7 @@ Entries can be added as they are needed.
 
 import sys
 import os
+from .base import CorpusBase
 
 
 class ElftoolsWrapper(object):
@@ -296,7 +297,7 @@ class CorpusReader(et.elffile.ELFFile):  # noqa
             return tags
 
 
-class Corpus:
+class Corpus(CorpusBase):
     """
     Generate an ABi corpus.
 
@@ -304,50 +305,7 @@ class Corpus:
     variables, and nested Dwarf Information Entries
     """
 
-    def __init__(self, filename, name=None, uid=None):
-
-        filename = os.path.abspath(filename)
-        if not os.path.exists(filename):
-            sys.exit("%s does not exist." % filename)
-
-        self.elfheader = {}
-        self.name = name
-        self.uid = uid
-
-        self.elfsymbols = {}
-        self.path = filename
-        self.basename = os.path.basename(filename)
-        self.dynamic_tags = {}
-        self.architecture = None
-        self._soname = None
-        self.read_elf_corpus()
-
-    def __str__(self):
-        return "[Corpus:%s]" % self.path
-
-    def __repr__(self):
-        return str(self)
-
-    def exists(self):
-        return self.path is not None and os.path.exists(self.path)
-
-    @property
-    def soname(self):
-        return self.dynamic_tags.get("soname")
-
-    @property
-    def needed(self):
-        return self.dynamic_tags.get("needed", [])
-
-    @property
-    def runpath(self):
-        return self.dynamic_tags.get("runpath")
-
-    @property
-    def rpath(self):
-        return self.dynamic_tags.get("rpath")
-
-    def read_elf_corpus(self):
+    def read_corpus(self):
         """
         Read the entire elf corpus, including dynamic and other sections.
         """
@@ -360,4 +318,4 @@ class Corpus:
         self.dynamic_tags = reader.get_dynamic_tags()
         self.architecture = reader.get_architecture()
         self.elfclass = reader.get_elf_class()
-        self.elfsymbols = reader.get_symbols()
+        self.symbols = reader.get_symbols()

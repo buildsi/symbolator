@@ -83,7 +83,7 @@ def listify(args):
     return list(args)
 
 
-class AspObject(object):
+class AspObject:
     """Object representing a piece of ASP code."""
 
 
@@ -163,8 +163,8 @@ class Result(object):
             )
 
 
-class PyclingoDriver(object):
-    def __init__(self, cores=True, asp=None):
+class PyclingoDriver:
+    def __init__(self, cores=True, asp=None, out=None):
         """Driver for the Python clingo interface.
 
         Arguments:
@@ -174,12 +174,15 @@ class PyclingoDriver(object):
                 for debugging or verification.
         """
         global clingo
-        self.out = asp or self.devnull()
+        if out:
+            self.out = out
+        else:
+            self.devnull()
         self.cores = cores
-        self.assumptions = []
 
     def devnull(self):
-        return open(os.devnull, "w")
+        self.f = open(os.devnull, "w")
+        self.out = self.f
 
     def __exit__(self):
         self.f.close()
@@ -350,7 +353,7 @@ class ABISolverBase:
         for corpus in corpora:
             self.gen.h2("Corpus symbols: %s" % corpus.path)
 
-            for symbol, meta in corpus.elfsymbols.items():
+            for symbol, meta in corpus.symbols.items():
 
                 # It begins with a NULL symbol, not sure it's useful
                 if not symbol:
@@ -578,13 +581,13 @@ class ABISolverBase:
         data["corpus"]["needed"] = corpus.dynamic_tags.get("needed", [])
 
         # Elf symbols
-        data["corpus"]["symbols"] = corpus.elfsymbols
+        data["corpus"]["symbols"] = corpus.symbols
 
         # Add system corpora to elf symbols
         if system_libs:
             data["corpus"]["system_libs"] = {}
             for lib in self.get_system_corpora([corpus]):
-                data["corpus"]["system_libs"][lib.path] = lib.elfsymbols
+                data["corpus"]["system_libs"][lib.path] = lib.symbols
         return data
 
 
