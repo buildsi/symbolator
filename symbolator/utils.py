@@ -7,6 +7,13 @@ from subprocess import Popen, PIPE, STDOUT
 import subprocess
 
 import os
+import json
+
+
+def read_json(filename):
+    with open(filename, "r") as fd:
+        data = json.loads(fd.read())
+    return data
 
 
 def which(software, strip_newline=True):

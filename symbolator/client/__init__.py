@@ -36,9 +36,21 @@ def get_parser():
     # print version and exit
     subparsers.add_parser("version", help="show software version")
 
+    # Stability test using smeagle output
+    stability = subparsers.add_parser(
+        "stability-test", help="Run a stability test using Smeagle facts."
+    )
+
+    stability.add_argument(
+        "libs", help="Working and contender library, in that order", nargs=2
+    )
+    stability.add_argument(
+        "--detail", default=False, action="store_true", help="Show detailed results."
+    )
+
+    # Compare two library elf symbols
     compare = subparsers.add_parser(
-        "compare",
-        help="Compare symbols between two libraries.",
+        "compare", help="Compare symbols between two libraries."
     )
     compare.add_argument(
         "libs", help="Two libraries (same but different versions) to compare", nargs=2
@@ -130,6 +142,8 @@ def run():
         from .compare import compare_libs as main
     elif args.command == "generate":
         from .generate import generate as main
+    elif args.command == "stability-test":
+        from .smeagle import stability_test as main
 
     # Pass on to the correct parser
     return_code = 0

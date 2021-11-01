@@ -1,0 +1,105 @@
+{
+    "library": "../cpp/libmath-v1.so",
+    "locations": [
+        {
+            "function": {
+                "parameters": [
+                    {
+                        "name": "b",
+                        "type": "double",
+                        "class": "Basic",
+                        "location": "%rdi",
+                        "direction": "import",
+                        "size": 8
+                    },
+                    {
+                        "name": "b",
+                        "type": "double",
+                        "class": "Basic",
+                        "location": "%rsi",
+                        "direction": "import",
+                        "size": 8
+                    }
+                ],
+                "name": "_ZN11MathLibrary10Arithmetic3AddEdd",
+                "direction": "import",
+                "type": "Function"
+            }
+        },
+        {
+            "function": {
+                "parameters": [
+                    {
+                        "name": "b",
+                        "type": "double",
+                        "class": "Basic",
+                        "location": "%rdi",
+                        "direction": "import",
+                        "size": 8
+                    },
+                    {
+                        "name": "b",
+                        "type": "double",
+                        "class": "Basic",
+                        "location": "%rsi",
+                        "direction": "import",
+                        "size": 8
+                    }
+                ],
+                "name": "_ZN11MathLibrary10Arithmetic8SubtractEdd",
+                "direction": "import",
+                "type": "Function"
+            }
+        },
+        {
+            "function": {
+                "parameters": [
+                    {
+                        "name": "b",
+                        "type": "double",
+                        "class": "Basic",
+                        "location": "%rdi",
+                        "direction": "import",
+                        "size": 8
+                    },
+                    {
+                        "name": "b",
+                        "type": "double",
+                        "class": "Basic",
+                        "location": "%rsi",
+                        "direction": "import",
+                        "size": 8
+                    }
+                ],
+                "name": "_ZN11MathLibrary10Arithmetic8MultiplyEdd",
+                "direction": "import",
+                "type": "Function"
+            }
+        },
+        {
+            "function": {
+                "parameters": [
+                    {
+                        "name": "b",
+                        "type": "double",
+                        "class": "Basic",
+                        "location": "%rdi",
+                        "direction": "import",
+                        "size": 8
+                    },
+                    {
+                        "name": "b",
+                        "type": "double",
+                        "class": "Basic",
+                        "location": "%rsi",
+                        "direction": "import",
+                        "size": 8
+                    }
+                ],
+                "name": "_ZN11MathLibrary10Arithmetic6DivideEdd",
+                "direction": "import",
+                "type": "Function"
+            }
+        }
+    ]
+}

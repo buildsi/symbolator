@@ -16,7 +16,7 @@ $ cd symbolator
 $ pip install -e .
 ```
 
-or from Pypi:
+or from pypi:
 
 ```bash
 $ pip install symbolator-python
@@ -24,7 +24,7 @@ $ pip install symbolator-python
 
 ### Generate Symbols
 
-If you just want to generate symbols for a library, you can do:
+If you just want to generate ELF symbols (pyelftools) for a library, you can do:
 
 ```bash
 $ symbolator generate <library>
@@ -61,7 +61,8 @@ $ symbolator generate --json libtcl8.6.so
 ### Compare Libraries (compare)
 
 If you have two libraries of different versions, a simple comparison will just determine
-if any symbols or arguments have changed. To do this, we just need the "same" library
+if any symbols or arguments have changed. Again we will use pyelftools for the symbol
+extraction. To do this, we just need the "same" library
 of two different versions. Let's first make the examples:
 
 ```bash
@@ -108,9 +109,6 @@ Or again just the json:
 $ symbolator compare libmath-v1.so libmath-v2.so --json
 ```
 
-As an alternative, I'm going to be adding an ability to parse output from [Smeagle](https://github.com/buildsi/Smeagle) or [gosmeagle](https://github.com/vsoch/gosmeagle) (not developed yet).
-
-
 ### Assess Compatibility (compat)
 
 To assess compatibility, we will need:
@@ -145,7 +143,7 @@ $ symbolator compat math-client libmath-v1.so libmath-v2.so
 % contender library: libmath-v2.so
 Missing Symbol Count: 1
 Missing Symbols:
-['/home/vanessa/Desktop/Code/symbolator/examples/cpp/math-client', '/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v2.so', '_ZN11MathLibrary10Arithmetic3AddEdd']
+['math-client', 'libmath-v2.so', '_ZN11MathLibrary10Arithmetic3AddEdd']
 ```
 
 Note that this is the right answer for the example - we are missing that symbol!
@@ -173,6 +171,35 @@ $ symbolator compat --json math-client libmath-v1.so libmath-v2.so
     "count_missing_symbols": "1"
 }
 ```
+
+Again, this is just using pyelftools to get the symbols directly from elf.
+
+### Smeagle Stability Model
+
+As of version 0.0.15, we have support to read in json output from [Smeagle](https://github.com/buildsi/Smeagle) or [gosmeagle](https://github.com/vsoch/gosmeagle) and then to to a more detailed stability model. Let's say we have two output files from smeagle,
+such as in [examples/smeagle](examples/smeagle) generated with gosmeagle doing the following:
+
+```bash
+$ cd examples/cpp
+$ make
+$ cd ../smeagle
+$ gosmeagle parse ../cpp/libmath-v1.so --pretty > libmath-v1.so.json
+$ gosmeagle parse ../cpp/libmath-v2.so --pretty > libmath-v2.so.json
+```
+
+We can then run symbolator to use the json to do a stability test.
+
+```bash
+$ symbolator stability-test examples/smeagle/libmath-v1.so.json examples/smeagle/libmath-v2.so.json --detail
+Libraries are not stable: 0 missing exports, 2 missing_imports
+
+Missing Imports
+---------------
+ _ZN11MathLibrary10Arithmetic3AddEdd Basic %rdi 0
+ _ZN11MathLibrary10Arithmetic3AddEdd Basic %rsi 0
+```
+
+This can be used programatically to get json output as well.
 
 ### Container Install
 
