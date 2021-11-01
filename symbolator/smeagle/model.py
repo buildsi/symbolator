@@ -239,8 +239,20 @@ class GeneratorBase:
         for param in func.get("parameters", []):
 
             # These values assume no underlying type (defaults)
-            param_name = param["name"]
-            param_type = param["class"]  # param['type'] is compiler specific
+            param_name = param.get("name")
+
+            # Allow to not know the location or direction
+            loc = param.get("location", "unknown")
+            direction = param.get("direction", "unknown")
+
+            # We can't really do anything with an unknown name
+            if not param_name:
+                print("Warning, parameter without name! %s" % param)
+                continue
+
+            param_type = param.get(
+                "class", "Unknown"
+            )  # param['type'] is compiler specific
 
             # If the param has fields, continue printing until we are done
             fields = param.get("fields", [])
@@ -263,8 +275,8 @@ class GeneratorBase:
                     func["name"],
                     param_name,
                     param_type,
-                    param["location"],
-                    param["direction"],
+                    loc,
+                    direction,
                     param.get("indirections", "0"),
                 )
             )
@@ -279,8 +291,8 @@ class GeneratorBase:
                         func["name"],
                         field.get("name", ""),
                         field.get("class", ""),
-                        param["location"],
-                        param["direction"],
+                        loc,
+                        direction,
                         field.get("indirections", "0"),
                     )
                 )
@@ -296,9 +308,9 @@ class GeneratorBase:
             # Symbol, Type, Register, Direction, Pointer Indirections
             args = [
                 func["name"],
-                param["class"],
-                param["location"],
-                param["direction"],
+                param_type,
+                loc,
+                direction,
                 param.get("indirections", "0"),
             ]
             fact = AspFunction("is_%s" % identifier, args=args)
