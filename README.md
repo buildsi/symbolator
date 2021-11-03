@@ -332,6 +332,15 @@ And Smeagle c++ can't parse them either.
 Segmentation fault (core dumped)
 ```
 
+### Tests
+
+After installing symbolator:
+
+```bash
+$ cd tests/
+$ ./test_client.sh
+```
+
 ### Container Install
 
 You can also build symbolator into a container!
