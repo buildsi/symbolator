@@ -9,7 +9,6 @@ Entries can be added as they are needed.
 """
 
 import sys
-import os
 from .base import CorpusBase
 
 

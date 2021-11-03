@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/buildsi/symbolator/tree/master) (0.0.x)
+ - Adding support for splicing with libs or json (0.0.17)
  - Be more forgiving to allow missing fields (0.0.16)
  - Add Smeagle stability model (stability-test command) (0.0.15)
  - Rename "compare" to "compat" and adding double library compare (0.0.14)

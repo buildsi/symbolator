@@ -1,0 +1,33 @@
+{
+    "library": "../../cpp/math-client",
+    "locations": [
+        {
+            "function": {
+                "name": "_ZN11MathLibrary10Arithmetic8SubtractEdd",
+                "direction": "import",
+                "type": "Function"
+            }
+        },
+        {
+            "function": {
+                "name": "_ZN11MathLibrary10Arithmetic3AddEdd",
+                "direction": "import",
+                "type": "Function"
+            }
+        },
+        {
+            "function": {
+                "name": "_ZN11MathLibrary10Arithmetic8MultiplyEdd",
+                "direction": "import",
+                "type": "Function"
+            }
+        },
+        {
+            "function": {
+                "name": "_ZN11MathLibrary10Arithmetic6DivideEdd",
+                "direction": "import",
+                "type": "Function"
+            }
+        }
+    ]
+}

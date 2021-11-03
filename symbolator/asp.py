@@ -3,13 +3,7 @@
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
-import collections
-import copy
-import hashlib
-import itertools
 import os
-import pprint
-import re
 import sys
 import time
 import types
@@ -157,7 +151,7 @@ class Result(object):
 
     def print_cores(self):
         for core in self.cores:
-            tty.msg(
+            print(
                 "The following constraints are unsatisfiable:",
                 *sorted(str(symbol) for symbol in core)
             )
@@ -167,7 +161,7 @@ class PyclingoDriver:
     def __init__(self, cores=True, out=None):
         """Driver for the Python clingo interface.
 
-        Arguments:
+        Arguments:PyclingoDriver
             cores (bool): whether to generate unsatisfiable cores for better
                 error reporting.
             out (file-like): optional stream to write a text-based ASP program
@@ -228,6 +222,8 @@ class PyclingoDriver:
         facts_only=False,
         # Only relevant for single library symbol dumps
         system_libs=False,
+        is_single=False,
+        splices=None,
     ):
         """Given three corpora, generate facts for a solver.
 
@@ -252,15 +248,22 @@ class PyclingoDriver:
         timer = Timer()
         self.control = clingo.Control()
 
+        # Splices get handed to the solver setup
+        splices = splices or {}
+
         # set up the problem -- this generates facts and rules
         with self.control.backend() as backend:
             self.backend = backend
 
             # one corpus we can only generate facts
-            if len(corpora) == 1:
-                solver_setup.single_setup(self, corpora[0], system_libs)
+            if len(corpora) == 1 and is_single:
+                solver_setup.single_setup(
+                    self, corpora[0], system_libs=system_libs, splices=splices
+                )
             else:
-                solver_setup.compat_setup(self, corpora)
+                solver_setup.compat_setup(
+                    self, corpora, splices=splices, system_libs=system_libs
+                )
         timer.phase("setup")
 
         # If we only want to generate facts, cut out early
@@ -308,9 +311,14 @@ class PyclingoDriver:
 
         if result.satisfiable:
             min_cost, best_model = min(models)
-            result.answers = {
-                sym.name: [stringify(a) for a in sym.arguments] for sym in best_model
-            }
+            result.answers = {}
+            for sym in best_model:
+                if sym.name in result.answers:
+                    result.answers[sym.name].append(
+                        [stringify(a) for a in sym.arguments]
+                    )
+                else:
+                    result.answers[sym.name] = [[stringify(a) for a in sym.arguments]]
 
         elif cores:
             symbols = dict((a.literal, a.symbol) for a in self.control.symbolic_atoms)
@@ -359,6 +367,10 @@ class ABISolverBase:
                 # It begins with a NULL symbol, not sure it's useful
                 if not symbol:
                     continue
+
+                # If we have @@ in the symbol, it's usually the compiler (remove)
+                if "@@" in symbol:
+                    symbol = symbol.split("@@")[0]
 
                 self.gen.fact(AspFunction(prefix + "symbol", args=[symbol]))
                 self.gen.fact(
@@ -502,38 +514,78 @@ class ABISolverBase:
 
     def get_system_corpora(self, corpora):
         """
-        Get a list of corpora for system corpora
+        Get a list of corpora for system corpora. If we are doing splicing,
+        honor the splice instead.
         """
         ldd = utils.which("ldd").get("message")
         if not ldd:
             print("Cannot find ldd to detect system libraries, skipping.")
             return
 
+        # Add the pwd and LD_LIBRARY_PATH to path
+        ld_libs = os.environ.get("LD_LIBRARY_PATH")
+        here = os.getcwd()
+        path = os.environ.get("PATH") + ":%s" % here
+        if ld_libs:
+            path = "%s:%s" % (path, ld_libs)
+            ld_libs = "%s:%s" % (ld_libs, here)
+        else:
+            ld_libs = here
+        os.environ["PATH"] = path
+        os.putenv("PATH", path)
+        os.putenv("LD_LIBRARY_PATH", ld_libs)
+
         # Ensure we don't add a library twice
         seen = set([x.path for x in corpora])
         syscorpora = []
+
         for corpus in corpora:
             output = utils.run_command([ldd, corpus.path]).get("message", "")
 
             for line in output.split("\n"):
-                if "=>" in line:
+
+                # If we cannot find a lib, still might be able to splice
+                path = None
+                lib = None
+                if "not found" in line:
+                    lib = line.split("=>")[0].strip()
+                    if lib in corpus.needed:
+                        path = lib
+
+                # Case 2: a library was found
+                elif "=>" in line:
                     lib, path = line.split("=>")
                     lib = lib.strip()
                     path = path.strip().split(" ")[0]
 
+                if path:
                     # Don't add redundant entries
-                    if path in seen:
+                    if path in seen or os.path.basename(path) in seen:
                         continue
+
+                    # If it's a splice entry, make sure we've added corpus
+                    if path in self.splices:
+                        path = self.splices[path]
+                    elif os.path.basename(path) in self.splices:
+                        path = self.splices[os.path.basename(path)]
+
                     if os.path.exists(path) and lib in corpus.needed:
                         syscorpora.append(Corpus(path, name=lib))
+                    elif not os.path.exists(path) and lib in corpus.needed:
+                        print(
+                            "Warning: %s is needed, but not found on system path."
+                            % path
+                        )
                     seen.add(path)
+
         return syscorpora
 
-    def single_setup(self, driver, corpus, system_libs=False):
+    def single_setup(self, driver, corpus, system_libs=False, **kwargs):
         """
         Generate facts for a single library.
         """
         assert corpus.exists()
+        self.splices = kwargs.get("splices", {})
 
         # driver is used by all the functions below to add facts and
         # rules to generate an ASP program.
@@ -554,17 +606,14 @@ class ABISolverBase:
         if system_libs:
             self.generate_elf_symbols(self.get_system_corpora([corpus]))
 
-    def get_json(self, corpus, system_libs=False):
+    def get_metadata(self, corpus):
         """
-        Get json symbols and metadata instead.
+        Dump corpus metadata to json
         """
-        assert corpus.exists()
-
-        data = {"corpus": {}}
         hdr = corpus.elfheader
 
         # Corpus metadata
-        data["corpus"]["metadata"] = {
+        return {
             "path": corpus.path,
             "corpus_name": os.path.basename(corpus.path),
             "corpus_soname": corpus.soname,
@@ -578,18 +627,40 @@ class ABISolverBase:
             "corpus_elf_version": hdr["e_version"],
         }
 
-        # Needed
+    def get_json(self, corpus, system_libs=False, corpora=None, **kwargs):
+        """
+        Get json symbols and metadata instead.
+        """
+        # We can call this recursively and append
+        corpora = corpora or []
+        assert corpus.exists()
+        self.splices = kwargs.get("splices", {})
+
+        data = {"corpus": {}}
+        data["corpus"]["metadata"] = self.get_metadata(corpus)
+
+        # This needs to be json serializable
+        hdr = corpus.elfheader
+        hdr["e_ident"] = dict(hdr.get("e_ident", {}))
+
+        # Needed and dynamic tags
         data["corpus"]["needed"] = corpus.dynamic_tags.get("needed", [])
+        data["corpus"]["dynamic_tags"] = corpus.dynamic_tags
+        data["corpus"]["header"] = hdr
 
         # Elf symbols
         data["corpus"]["symbols"] = corpus.symbols
+        corpora.append(data)
 
         # Add system corpora to elf symbols
         if system_libs:
-            data["corpus"]["system_libs"] = {}
             for lib in self.get_system_corpora([corpus]):
-                data["corpus"]["system_libs"][lib.path] = lib.symbols
-        return data
+
+                # Do not recursively add system libs - we can only care about top level corpus
+                corpora += self.get_json(
+                    lib, system_libs=False, corpora=corpora, **kwargs
+                )
+        return corpora
 
 
 class ABICompatSolverSetup(ABISolverBase):
@@ -597,7 +668,7 @@ class ABICompatSolverSetup(ABISolverBase):
     Class to set up and run a compatibility check for a binary and two libs.
     """
 
-    def compat_setup(self, driver, corpora):
+    def compat_setup(self, driver, corpora, **kwargs):
         """
         Generate an ASP program with relevant constraints for a binary
         and a library, for which we have been provided their corpora.
@@ -619,6 +690,8 @@ class ABICompatSolverSetup(ABISolverBase):
 
         binary, working, contender = corpora
         corpora = [binary, contender]
+        self.splices = kwargs.get("splices", {})
+        system_libs = kwargs.get("system_libs") or True
 
         # driver is used by all the functions below to add facts and
         # rules to generate an ASP program.
@@ -644,7 +717,37 @@ class ABICompatSolverSetup(ABISolverBase):
         self.generate_elf_symbols([working], prefix="needed")
 
         # Add system corpora to elf symbols
-        self.generate_elf_symbols(self.get_system_corpora(corpora))
+        if system_libs:
+            self.generate_elf_symbols(self.get_system_corpora(corpora))
+
+
+class ABIGlobalSolverSetup(ABISolverBase):
+    """
+    Class to set up and run a compatibility check for a binary and some number of libs.
+    """
+
+    def compat_setup(self, driver, corpora, **kwargs):
+        self.splices = kwargs.get("splices", {})
+        system_libs = kwargs.get("system_libs", True)
+
+        # driver is used by all the functions below to add facts and
+        # rules to generate an ASP program.
+        self.gen = driver
+
+        self.gen.h1("Corpus Facts")
+
+        # Generate high level corpus metadata facts (e.g., header)
+        self.generate_corpus_metadata(corpora)
+
+        # Dynamic libraries that are needed
+        self.generate_needed(corpora)
+
+        # generate all elf symbols (might be able to make this smaller set)
+        self.generate_elf_symbols(corpora)
+
+        # Add system corpora to elf symbols
+        if system_libs:
+            self.generate_elf_symbols(self.get_system_corpora(corpora))
 
 
 class ABICompareSolverSetup(ABISolverBase):
@@ -652,7 +755,7 @@ class ABICompareSolverSetup(ABISolverBase):
     Class to set up and run a comparison between two libraries
     """
 
-    def compat_setup(self, driver, corpora):
+    def compat_setup(self, driver, corpora, **kwargs):
         """
         Arguments:
             corpora: [corpusA, corpusB]
@@ -664,6 +767,8 @@ class ABICompareSolverSetup(ABISolverBase):
             assert corpus.exists()
 
         libA, libB = corpora
+        self.splices = kwargs.get("splices", {})
+        system_libs = kwargs.get("system_libs") or True
 
         # driver is used by all the functions below to add facts and
         # rules to generate an ASP program.
@@ -684,4 +789,5 @@ class ABICompareSolverSetup(ABISolverBase):
         self.generate_elf_symbols(corpora)
 
         # Add system corpora to elf symbols
-        self.generate_elf_symbols(self.get_system_corpora(corpora))
+        if system_libs:
+            self.generate_elf_symbols(self.get_system_corpora(corpora))

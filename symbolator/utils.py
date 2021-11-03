@@ -4,9 +4,6 @@
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
 from subprocess import Popen, PIPE, STDOUT
-import subprocess
-
-import os
 import json
 
 

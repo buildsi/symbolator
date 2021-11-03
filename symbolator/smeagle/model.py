@@ -8,15 +8,11 @@ This is adopted from https://github.com/buildsi/smeagle-demo (db)
 """
 
 import sys
-import logging
 import os
-import re
 import json
-import subprocess
 import jsonschema
-import time
-import shutil
 import clingo
+import pprint
 
 from symbolator.facts import get_facts
 from symbolator.asp import AspFunction, AspFunctionBuilder, Result, PyclingoDriver
@@ -233,7 +229,6 @@ class GeneratorBase:
             return
 
         libname = os.path.basename(lib.data["library"])
-        name = func["name"]
         seen = set()
 
         for param in func.get("parameters", []):

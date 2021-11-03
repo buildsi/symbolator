@@ -1,0 +1,62 @@
+{
+    "math-client": [
+        "_ITM_deregisterTMCloneTable",
+        "__gmon_start__",
+        "_ITM_registerTMCloneTable"
+    ],
+    "/home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v1.so": [
+        "_ITM_deregisterTMCloneTable",
+        "__gmon_start__",
+        "_ITM_registerTMCloneTable"
+    ],
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6": [
+        "pthread_once",
+        "_Unwind_DeleteException",
+        "__pthread_key_create",
+        "_ZGTtdlPv",
+        "_Unwind_SetGR",
+        "__tls_get_addr",
+        "pthread_setspecific",
+        "pthread_rwlock_rdlock",
+        "_ITM_addUserCommitAction",
+        "_Unwind_GetRegionStart",
+        "pthread_key_create",
+        "_Unwind_SetIP",
+        "_Unwind_Resume",
+        "_ITM_memcpyRnWt",
+        "pthread_key_delete",
+        "_Unwind_RaiseException",
+        "pthread_rwlock_unlock",
+        "pthread_getspecific",
+        "pthread_create",
+        "_ITM_registerTMCloneTable",
+        "_ITM_deregisterTMCloneTable",
+        "_Unwind_GetIPInfo",
+        "pthread_join",
+        "_ITM_RU1",
+        "pthread_detach",
+        "_ITM_memcpyRtWn",
+        "pthread_rwlock_wrlock",
+        "_Unwind_Resume_or_Rethrow",
+        "__popcountdi2",
+        "_ZGTtnam",
+        "_Unwind_GetDataRelBase",
+        "_Unwind_GetTextRelBase",
+        "__gmon_start__",
+        "_Unwind_GetLanguageSpecificData",
+        "_ITM_RU8"
+    ],
+    "/lib/x86_64-linux-gnu/libc.so.6": [
+        "_dl_argv",
+        "__tunable_get_val",
+        "_dl_exception_create",
+        "__libpthread_freeres",
+        "__libc_enable_secure",
+        "__libdl_freeres",
+        "_rtld_global",
+        "__tls_get_addr",
+        "_rtld_global_ro",
+        "_dl_starting_up",
+        "_dl_find_dso_for_object"
+    ]
+}

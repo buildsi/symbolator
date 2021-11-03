@@ -1,0 +1,63 @@
+% binary : math-client
+
+Missing Symbols:
+
+=> math-client
+   __gmon_start__
+   _ITM_deregisterTMCloneTable
+   _ITM_registerTMCloneTable
+
+=> /home/vanessa/Desktop/Code/symbolator/examples/cpp/libmath-v1.so
+   __gmon_start__
+   _ITM_deregisterTMCloneTable
+   _ITM_registerTMCloneTable
+
+=> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+   _ITM_deregisterTMCloneTable
+   _ITM_RU8
+   __popcountdi2
+   pthread_rwlock_rdlock
+   pthread_create
+   pthread_key_delete
+   _Unwind_Resume_or_Rethrow
+   pthread_rwlock_unlock
+   _Unwind_GetIPInfo
+   _Unwind_SetGR
+   _Unwind_Resume
+   pthread_detach
+   __pthread_key_create
+   _Unwind_GetTextRelBase
+   _ZGTtdlPv
+   __gmon_start__
+   _Unwind_GetDataRelBase
+   pthread_key_create
+   pthread_getspecific
+   _ITM_RU1
+   _Unwind_DeleteException
+   _Unwind_GetLanguageSpecificData
+   _ITM_addUserCommitAction
+   _ZGTtnam
+   __tls_get_addr
+   _ITM_registerTMCloneTable
+   _Unwind_GetRegionStart
+   pthread_rwlock_wrlock
+   pthread_setspecific
+   _ITM_memcpyRnWt
+   _ITM_memcpyRtWn
+   _Unwind_RaiseException
+   pthread_once
+   pthread_join
+   _Unwind_SetIP
+
+=> /lib/x86_64-linux-gnu/libc.so.6
+   _dl_argv
+   __libdl_freeres
+   __libc_enable_secure
+   _dl_starting_up
+   _rtld_global_ro
+   _dl_exception_create
+   __tls_get_addr
+   __libpthread_freeres
+   __tunable_get_val
+   _rtld_global
+   _dl_find_dso_for_object

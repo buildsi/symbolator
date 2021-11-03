@@ -60,7 +60,7 @@ $ symbolator generate --json libtcl8.6.so
 
 ### Compare Libraries (compare)
 
-If you have two libraries of different versions, a simple comparison will just determine
+If you have *two* libraries of different versions, a simple comparison will just determine
 if any symbols or arguments have changed. Again we will use pyelftools for the symbol
 extraction. To do this, we just need the "same" library
 of two different versions. Let's first make the examples:
@@ -174,6 +174,7 @@ $ symbolator compat --json math-client libmath-v1.so libmath-v2.so
 
 Again, this is just using pyelftools to get the symbols directly from elf.
 
+
 ### Smeagle Stability Model
 
 As of version 0.0.15, we have support to read in json output from [Smeagle](https://github.com/buildsi/Smeagle) or [gosmeagle](https://github.com/vsoch/gosmeagle) and then to to a more detailed stability model. Let's say we have two output files from smeagle,
@@ -200,6 +201,136 @@ Missing Imports
 ```
 
 This can be used programatically to get json output as well.
+
+### Splice with Libraries
+
+Let's say we also have a binary of interest, but we are just interested in inspecting the symbols (and looking for any undefined)
+or asking to "splice" a library of interest in for some known dependency - we can do this with "splice." When just given
+a single binary, it will read in the binary, find all dependnecy libraries, and then output any undefined symbols (which there should not
+be any).
+
+```bash
+$ symbolator splice math-client
+
+% binary : math-client
+% splice : libmath-v1.so->libmath-v2.so
+
+Missing Symbols:
+
+=> math-client
+   __gmon_start__
+   _ITM_deregisterTMCloneTable
+   _ITM_registerTMCloneTable
+
+...
+```
+And now let's say we want to splice in the other version of libmath instead.
+
+```bash
+$ symbolator splice math-client -s libmath-v1.so=libmath-v2.so
+```
+
+If the library primary name were the same (e.g., libmath.1.so vs libmath.2.so) we could just do:
+
+```bash
+$ symbolator splice math-client -s libmath.2.so
+```
+```bash
+% binary : math-client
+% splice : libmath-v1.so->libmath-v2.so
+
+Missing Symbols:
+
+=> math-client
+   _ZN11MathLibrary10Arithmetic3AddEdd
+   __gmon_start__
+   _ITM_deregisterTMCloneTable
+   _ITM_registerTMCloneTable
+```
+
+to use the prefix. But since the prefix has a different name, we need to explicitly name it.
+To get output as json:
+
+```bash
+$ symbolator splice math-client -s libmath.2.so --json
+```
+If we generated symbols for spliced and unspliced (given a changed library) we can then do a quick diff
+(across all symbols) and find that the only difference is the missing symbol from the changed library:
+
+```bash
+[x for x in values if x not in compares]
+['_ZN11MathLibrary10Arithmetic3AddEdd']
+```
+
+#### Delayed Splice
+
+If we want to dump json to splice later, we can do the following:
+
+```bash
+$ mkdir -p examples/splice
+$ cd examples/splice
+$ symbolator generate ../cpp/math-client --system-libs --json > math-client.json
+$ symbolator generate ../cpp/libmath-v2.so --system-libs --json > libmath-v2.so.json
+```
+
+And then do a similar splice, but with the input jsons.
+
+```bash
+$ symbolator jsonsplice math-client.json -s libmath-v1.so=libmath-v2.so.json
+```
+
+or without the splice:
+
+```bash
+$ symbolator jsonsplice math-client.json
+```
+
+The output is the same (we see the missing symbol) but with this method we can run the extractions separately,
+save the data, and then do the splice from the json later!
+
+### Splice with Smeagle
+
+**under development**
+
+Note that this won't work until either smeagle can handle loading these libraries without segfaulting. The exercise will look something like the following.
+
+If we want to run this similar analysis with Smeagle facts, then we actually need to generate all the facts in advance, and "throw them into a soup."
+We can do that by way of discovery with ldd and then generation, and then handing off the json to the splice.
+
+```bash
+$ ldd examples/cpp/math-client
+	linux-vdso.so.1 (0x00007ffc05b96000)
+	libmath-v1.so => not found
+	libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f6854aff000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f685490d000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f68547be000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f6854d03000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f68547a3000)
+```
+
+From the above we run:
+
+```bash
+$ mkdir -p examples/smeagle/global
+$ cd examples/smeagle/global
+$ gosmeagle parse ../../cpp/libmath-v1.so --pretty > libmath-v1.so.json
+$ gosmeagle parse ../../cpp/math-client --pretty > math-client.json
+$ gosmeagle parse /lib/modules/5.4.0-89-generic/vdso/vdso64.so --pretty > vdso64.so.json
+```
+These do not have dwarf
+
+```bash
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+/lib/x86_64-linux-gnu/libc.so.6
+/lib64/ld-linux-x86-64.so.2
+/lib/x86_64-linux-gnu/libgcc_s.so.1
+```
+And Smeagle c++ can't parse them either.
+
+```bash
+# ./build/standalone/Smeagle -l /lib/x86_64-linux-gnu/libgcc_s.so.1 
+Segmentation fault (core dumped)
+```
 
 ### Container Install
 

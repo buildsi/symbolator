@@ -8,7 +8,6 @@
 import symbolator
 import argparse
 import sys
-import os
 
 
 def get_parser():
@@ -35,6 +34,34 @@ def get_parser():
 
     # print version and exit
     subparsers.add_parser("version", help="show software version")
+
+    # Splice a binary and find all libraries
+    splice = subparsers.add_parser(
+        "splice",
+        help="Assess the entire space of libs for a binary, optionally splicing in a new library.",
+    )
+
+    # Jsonsplice is similar, but from input json instead
+    jsonsplice = subparsers.add_parser(
+        "jsonsplice",
+        help="Do a splice from generate (json) output.",
+    )
+
+    for command in [splice, jsonsplice]:
+        command.add_argument(
+            "binary", help="Single binary to find and assess libs for.", nargs=1
+        )
+
+        command.add_argument(
+            "--splice", "-s", help="Optional libraries to splice in.", action="append"
+        )
+        command.add_argument(
+            "--dump",
+            dest="dump",
+            help="Dump asp to stdout instead",
+            default=False,
+            action="store_true",
+        )
 
     # Stability test using smeagle output
     stability = subparsers.add_parser(
@@ -87,7 +114,7 @@ def get_parser():
     )
 
     # Either command can accept json
-    for command in [generate, compat, compare]:
+    for command in [generate, compat, compare, splice, jsonsplice]:
         command.add_argument(
             "--json",
             dest="json",
@@ -142,6 +169,10 @@ def run():
         from .compare import compare_libs as main
     elif args.command == "generate":
         from .generate import generate as main
+    elif args.command == "jsonsplice":
+        from .splice import jsonsplice as main
+    elif args.command == "splice":
+        from .splice import splice as main
     elif args.command == "stability-test":
         from .smeagle import stability_test as main
 

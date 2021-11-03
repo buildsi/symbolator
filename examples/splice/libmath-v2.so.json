@@ -1,0 +1,233 @@
+[
+    {
+        "corpus": {
+            "metadata": {
+                "path": "../cpp/libmath-v2.so",
+                "corpus_name": "libmath-v2.so",
+                "corpus_soname": null,
+                "corpus_elf_class": "ELFCLASS64",
+                "corpus_data_encoding": "ELFDATA2LSB",
+                "corpus_file_version": "EV_CURRENT",
+                "corpus_elf_osabi": "ELFOSABI_SYSV",
+                "corpus_abiversion": 0,
+                "corpus_elf_type": "ET_DYN",
+                "corpus_elf_machine": "EM_X86_64",
+                "corpus_elf_version": "EV_CURRENT"
+            },
+            "needed": [],
+            "dynamic_tags": {},
+            "header": {
+                "e_ident": {
+                    "EI_MAG": [
+                        127,
+                        69,
+                        76,
+                        70
+                    ],
+                    "EI_CLASS": "ELFCLASS64",
+                    "EI_DATA": "ELFDATA2LSB",
+                    "EI_VERSION": "EV_CURRENT",
+                    "EI_OSABI": "ELFOSABI_SYSV",
+                    "EI_ABIVERSION": 0
+                },
+                "e_type": "ET_DYN",
+                "e_machine": "EM_X86_64",
+                "e_version": "EV_CURRENT",
+                "e_entry": 4160,
+                "e_phoff": 64,
+                "e_shoff": 15720,
+                "e_flags": 0,
+                "e_ehsize": 64,
+                "e_phentsize": 56,
+                "e_phnum": 11,
+                "e_shentsize": 64,
+                "e_shnum": 30,
+                "e_shstrndx": 29
+            },
+            "symbols": {
+                "": {
+                    "version_info": "",
+                    "type": "FILE",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "ABS"
+                },
+                "__cxa_finalize": {
+                    "version_info": "",
+                    "type": "NOTYPE",
+                    "binding": "WEAK",
+                    "visibility": "DEFAULT",
+                    "defined": "UND"
+                },
+                "_ITM_registerTMCloneTable": {
+                    "version_info": "",
+                    "type": "NOTYPE",
+                    "binding": "WEAK",
+                    "visibility": "DEFAULT",
+                    "defined": "UND"
+                },
+                "_ITM_deregisterTMCloneTable": {
+                    "version_info": "",
+                    "type": "NOTYPE",
+                    "binding": "WEAK",
+                    "visibility": "DEFAULT",
+                    "defined": "UND"
+                },
+                "__gmon_start__": {
+                    "version_info": "",
+                    "type": "NOTYPE",
+                    "binding": "WEAK",
+                    "visibility": "DEFAULT",
+                    "defined": "UND"
+                },
+                "_ZN11MathLibrary10Arithmetic3AddEii": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "GLOBAL",
+                    "visibility": "DEFAULT",
+                    "defined": "10"
+                },
+                "_ZN11MathLibrary10Arithmetic8MultiplyEdd": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "GLOBAL",
+                    "visibility": "DEFAULT",
+                    "defined": "10"
+                },
+                "_ZN11MathLibrary10Arithmetic6DivideEdd": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "GLOBAL",
+                    "visibility": "DEFAULT",
+                    "defined": "10"
+                },
+                "_ZN11MathLibrary10Arithmetic8SubtractEdd": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "GLOBAL",
+                    "visibility": "DEFAULT",
+                    "defined": "10"
+                },
+                "crtstuff.c": {
+                    "version_info": "",
+                    "type": "FILE",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "ABS"
+                },
+                "deregister_tm_clones": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "10"
+                },
+                "register_tm_clones": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "10"
+                },
+                "__do_global_dtors_aux": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "10"
+                },
+                "completed.8060": {
+                    "version_info": "",
+                    "type": "OBJECT",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "20"
+                },
+                "__do_global_dtors_aux_fini_array_entry": {
+                    "version_info": "",
+                    "type": "OBJECT",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "15"
+                },
+                "frame_dummy": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "10"
+                },
+                "__frame_dummy_init_array_entry": {
+                    "version_info": "",
+                    "type": "OBJECT",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "14"
+                },
+                "MathLibraryChanged.cpp": {
+                    "version_info": "",
+                    "type": "FILE",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "ABS"
+                },
+                "__FRAME_END__": {
+                    "version_info": "",
+                    "type": "OBJECT",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "13"
+                },
+                "_DYNAMIC": {
+                    "version_info": "",
+                    "type": "OBJECT",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "16"
+                },
+                "__TMC_END__": {
+                    "version_info": "",
+                    "type": "OBJECT",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "19"
+                },
+                "__dso_handle": {
+                    "version_info": "",
+                    "type": "OBJECT",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "19"
+                },
+                "_init": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "7"
+                },
+                "__GNU_EH_FRAME_HDR": {
+                    "version_info": "",
+                    "type": "NOTYPE",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "12"
+                },
+                "_fini": {
+                    "version_info": "",
+                    "type": "FUNC",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "11"
+                },
+                "_GLOBAL_OFFSET_TABLE_": {
+                    "version_info": "",
+                    "type": "OBJECT",
+                    "binding": "LOCAL",
+                    "visibility": "DEFAULT",
+                    "defined": "18"
+                }
+            }
+        }
+    }
+]
