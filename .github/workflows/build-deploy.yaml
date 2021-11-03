@@ -20,7 +20,7 @@ jobs:
       - name: Build Symbolator Container
         run: |
             docker build -t ghcr.io/buildsi/symbolator-python .
-            version=$(docker run ghcr.io/buildsi/symbolator-python --version)
+            version=$(docker run ghcr.io/buildsi/symbolator-python version)
             printf "Found version ${version}"
             docker tag ghcr.io/buildsi/symbolator-python:latest ghcr.io/buildsi/symbolator-python:${version}
             docker images | grep symbolator
@@ -30,6 +30,6 @@ jobs:
         run: |
             docker images
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
-            version=$(docker run ghcr.io/buildsi/symbolator-python --version)
+            version=$(docker run ghcr.io/buildsi/symbolator-python version)
             docker push ghcr.io/buildsi/symbolator-python:latest
             docker push ghcr.io/buildsi/symbolator-python:${version}
