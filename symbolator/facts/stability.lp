@@ -24,7 +24,6 @@ exported_B(Symbol, Type, Register, PointerIndirections) :-
 imported_B(Symbol, Type, Register, PointerIndirections) :- 
     is_b(Symbol, Type, Register, "import", PointerIndirections).
 
-
 % Let Dependencies(Bin) be the set of binaries that binary Bin depends on. 
 % We don't have this represented yet?
 

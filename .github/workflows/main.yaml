@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: []
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup black environment
+        run: conda create --quiet --name black
+
+      - name: Check formatting with black
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          source activate black
+          pip install black
+          black --check symbolator
+
+  testing:
+    needs: formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup testing environment
+        run: conda create --quiet --name testing pytest
+
+      - name: Test symbolator
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          source activate testing
+          pip install -e .[all]
+          # pytest -sv tests/*.py
+          cd tests/
+          /bin/bash test_client.sh

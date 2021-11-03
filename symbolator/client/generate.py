@@ -28,7 +28,13 @@ def generate(args, parser, extra, subparser):
         # Get output via StringIO
         out = io.StringIO()
         driver = PyclingoDriver(out=out)
-        driver.solve(setup, [corpus], facts_only=True, system_libs=args.system_libs)
+        driver.solve(
+            setup,
+            [corpus],
+            facts_only=True,
+            system_libs=args.system_libs,
+            is_single=True,
+        )
         asp = out.getvalue()
         out.close()
         print(asp)

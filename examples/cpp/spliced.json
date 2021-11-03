@@ -1,0 +1,63 @@
+{
+    "math-client": [
+        "_ZN11MathLibrary10Arithmetic3AddEdd",
+        "__gmon_start__",
+        "_ITM_deregisterTMCloneTable",
+        "_ITM_registerTMCloneTable"
+    ],
+    "libmath-v2.so": [
+        "_ITM_registerTMCloneTable",
+        "__gmon_start__",
+        "_ITM_deregisterTMCloneTable"
+    ],
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6": [
+        "_Unwind_Resume_or_Rethrow",
+        "_ITM_memcpyRnWt",
+        "_Unwind_DeleteException",
+        "_Unwind_GetLanguageSpecificData",
+        "pthread_setspecific",
+        "pthread_key_create",
+        "_Unwind_GetTextRelBase",
+        "__popcountdi2",
+        "_Unwind_Resume",
+        "_Unwind_SetIP",
+        "__tls_get_addr",
+        "pthread_create",
+        "_ITM_registerTMCloneTable",
+        "pthread_rwlock_wrlock",
+        "pthread_join",
+        "pthread_detach",
+        "__gmon_start__",
+        "_ITM_addUserCommitAction",
+        "pthread_key_delete",
+        "_Unwind_GetDataRelBase",
+        "_ZGTtdlPv",
+        "_Unwind_GetRegionStart",
+        "_ZGTtnam",
+        "pthread_once",
+        "_ITM_memcpyRtWn",
+        "_Unwind_RaiseException",
+        "_ITM_RU1",
+        "pthread_getspecific",
+        "_Unwind_GetIPInfo",
+        "pthread_rwlock_unlock",
+        "_Unwind_SetGR",
+        "_ITM_deregisterTMCloneTable",
+        "__pthread_key_create",
+        "pthread_rwlock_rdlock",
+        "_ITM_RU8"
+    ],
+    "/lib/x86_64-linux-gnu/libc.so.6": [
+        "_rtld_global",
+        "_dl_find_dso_for_object",
+        "__tunable_get_val",
+        "_dl_argv",
+        "__libdl_freeres",
+        "_rtld_global_ro",
+        "_dl_exception_create",
+        "__tls_get_addr",
+        "__libc_enable_secure",
+        "_dl_starting_up",
+        "__libpthread_freeres"
+    ]
+}

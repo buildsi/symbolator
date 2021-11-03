@@ -1,0 +1,65 @@
+% binary : math-client
+% splice : libmath-v1.so->libmath-v2.so
+
+Missing Symbols:
+
+=> math-client
+   _ZN11MathLibrary10Arithmetic3AddEdd
+   __gmon_start__
+   _ITM_deregisterTMCloneTable
+   _ITM_registerTMCloneTable
+
+=> libmath-v2.so
+   __gmon_start__
+   _ITM_deregisterTMCloneTable
+   _ITM_registerTMCloneTable
+
+=> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+   __gmon_start__
+   pthread_key_delete
+   _Unwind_SetGR
+   _ITM_deregisterTMCloneTable
+   _ITM_memcpyRtWn
+   _Unwind_DeleteException
+   _ITM_addUserCommitAction
+   pthread_rwlock_wrlock
+   pthread_getspecific
+   _ITM_registerTMCloneTable
+   pthread_once
+   _ITM_RU1
+   _Unwind_Resume_or_Rethrow
+   _Unwind_GetDataRelBase
+   pthread_create
+   _Unwind_GetLanguageSpecificData
+   _ITM_memcpyRnWt
+   _ZGTtnam
+   _Unwind_RaiseException
+   __tls_get_addr
+   _ITM_RU8
+   pthread_detach
+   _Unwind_GetTextRelBase
+   _ZGTtdlPv
+   pthread_rwlock_unlock
+   __pthread_key_create
+   _Unwind_GetRegionStart
+   pthread_join
+   _Unwind_GetIPInfo
+   pthread_setspecific
+   _Unwind_Resume
+   _Unwind_SetIP
+   pthread_rwlock_rdlock
+   __popcountdi2
+   pthread_key_create
+
+=> /lib/x86_64-linux-gnu/libc.so.6
+   _dl_starting_up
+   __tunable_get_val
+   __libc_enable_secure
+   _rtld_global_ro
+   _dl_argv
+   __libpthread_freeres
+   _dl_exception_create
+   _dl_find_dso_for_object
+   __libdl_freeres
+   _rtld_global
+   __tls_get_addr

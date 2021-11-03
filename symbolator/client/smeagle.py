@@ -8,9 +8,6 @@
 # from symbolator.facts import get_facts
 
 from symbolator.smeagle import SmeagleRunner
-import json
-import os
-import sys
 
 
 def stability_test(args, parser, extra, subparser):

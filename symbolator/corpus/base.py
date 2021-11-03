@@ -8,14 +8,16 @@ We exclude most of the Dwarf Information Entries to expose a reduced set.
 Entries can be added as they are needed.
 """
 
+from symbolator.utils import read_json
 import sys
 import os
 
 
 class CorpusBase:
-    def __init__(self, filename, name=None, uid=None):
+    def __init__(self, filename, name=None, uid=None, **kwargs):
 
-        if not os.path.exists(filename):
+        must_exist = kwargs.get("must_exist", True)
+        if not os.path.exists(filename) and must_exist:
             sys.exit("%s does not exist." % filename)
 
         self.elfheader = {}
@@ -29,6 +31,7 @@ class CorpusBase:
         self.dynamic_tags = {}
         self.architecture = None
         self._soname = None
+        self.kwargs = kwargs
         self.read_corpus()
 
     def read_corpus(self):
@@ -58,3 +61,64 @@ class CorpusBase:
     @property
     def rpath(self):
         return self.dynamic_tags.get("rpath")
+
+
+class JsonCorpusLoader:
+    def __init__(self):
+        self.seen = set()
+        self.corpora = []
+
+    def get_lookup(self, key="name"):
+        """
+        Return a corpus lookup (by key)
+        """
+        # Create a lookup we can easily sub a library in for
+        lookup = {}
+        for corpus in self.corpora:
+            field = getattr(corpus, key)
+            if field in lookup:
+                print("Warning: %s is seen more than once in lookup." % field)
+            lookup[field] = corpus
+        return lookup
+
+    def load(self, filename):
+        """
+        Given a json dump of a corpus (and system libraries) load into corpora
+        """
+        if not os.path.exists(filename):
+            sys.exit("%s for loading corpora does not exist." % filename)
+        content = read_json(filename)
+        for entry in content:
+            if "corpus" not in entry:
+                sys.exit("corpus key missing at top level of %s" % filename)
+            corpus = entry["corpus"]
+            filename = corpus["metadata"]["path"]
+            name = corpus["metadata"]["corpus_name"]
+
+            # It's reasonable we could have a corpus seen twice
+            if filename not in self.seen:
+                self.corpora.append(
+                    JsonCorpus(filename, name, loaded=entry["corpus"], must_exist=False)
+                )
+                self.seen.add(filename)
+
+
+class JsonCorpus(CorpusBase):
+    """
+    Generate an ABI corpus from Json input
+    """
+
+    def read_corpus(self):
+        """
+        Read the entire json corpus
+        """
+        loaded = self.kwargs.get("loaded")
+        if not loaded:
+            sys.exit("Cannot create a json corpus without loaded content.")
+
+        self.metadata = loaded.get("metadata", {})
+        self.symbols = loaded.get("symbols", {})
+        self.elfheader = loaded.get("header", {})
+        self.dynamic_tags = loaded.get("dynamic_tags", {})
+        self.architecture = self.metadata.get("corpus_elf_machine")
+        self.elfclass = self.metadata.get("corpus_elf_class")
