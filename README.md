@@ -58,6 +58,13 @@ If you want json output:
 $ symbolator generate --json libtcl8.6.so
 ```
 
+or json with _only_ global symbols:
+
+```bash
+$ symbolator generate --json --globals libtcl8.6.so
+```
+
+
 ### Compare Libraries (compare)
 
 If you have *two* libraries of different versions, a simple comparison will just determine
