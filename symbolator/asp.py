@@ -531,6 +531,7 @@ class ABISolverBase:
             ld_libs = "%s:%s" % (ld_libs, here)
         else:
             ld_libs = here
+
         os.environ["PATH"] = path
         os.putenv("PATH", path)
         os.putenv("LD_LIBRARY_PATH", ld_libs)
@@ -540,6 +541,12 @@ class ABISolverBase:
         syscorpora = []
 
         for corpus in corpora:
+
+            # Try adding rpaths
+            rpaths = corpus.dynamic_tags.get("rpaths")
+            if rpaths:
+                os.putenv("LD_LIBRARY_PATH", "%s:%s" % (ld_libs, ":".join(rpaths)))
+
             output = utils.run_command([ldd, corpus.path]).get("message", "")
 
             for line in output.split("\n"):
@@ -569,7 +576,7 @@ class ABISolverBase:
                     elif os.path.basename(path) in self.splices:
                         path = self.splices[os.path.basename(path)]
 
-                    if os.path.exists(path) and lib in corpus.needed:
+                    if os.path.exists(path):
                         syscorpora.append(Corpus(path, name=lib))
                     elif not os.path.exists(path) and lib in corpus.needed:
                         print(
@@ -670,7 +677,17 @@ class ABISolverBase:
                 corpora += self.get_json(
                     lib, system_libs=False, corpora=corpora, **kwargs
                 )
-        return corpora
+
+        # One final filter to only add unique paths
+        uniques = []
+        seen = set()
+        for corpus in corpora:
+            path = corpus["corpus"]["metadata"]["path"]
+            if path in seen:
+                continue
+            uniques.append(corpus)
+            seen.add(path)
+        return uniques
 
 
 class ABICompatSolverSetup(ABISolverBase):
