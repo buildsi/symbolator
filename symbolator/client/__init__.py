@@ -112,6 +112,13 @@ def get_parser():
         default=False,
         action="store_true",
     )
+    generate.add_argument(
+        "--globals",
+        dest="globals_only",
+        help="Only include global symbols",
+        default=False,
+        action="store_true",
+    )
 
     # Either command can accept json
     for command in [generate, compat, compare, splice, jsonsplice]:

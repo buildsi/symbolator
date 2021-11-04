@@ -20,7 +20,9 @@ def generate(args, parser, extra, subparser):
 
     # Json output
     if args.json:
-        result = setup.get_json(corpus, system_libs=args.system_libs)
+        result = setup.get_json(
+            corpus, system_libs=args.system_libs, globals_only=args.globals_only
+        )
         print(json.dumps(result, indent=4))
 
     # Asp output

@@ -635,6 +635,7 @@ class ABISolverBase:
         corpora = corpora or []
         assert corpus.exists()
         self.splices = kwargs.get("splices", {})
+        globals_only = kwargs.get("globals_only", False)
 
         data = {"corpus": {}}
         data["corpus"]["metadata"] = self.get_metadata(corpus)
@@ -649,7 +650,16 @@ class ABISolverBase:
         data["corpus"]["header"] = hdr
 
         # Elf symbols
-        data["corpus"]["symbols"] = corpus.symbols
+        symbols = corpus.symbols
+        if globals_only:
+            updated = {}
+            for name, symbol in symbols.items():
+                if symbol["binding"] != "GLOBAL":
+                    continue
+                updated[name] = symbol
+            symbols = updated
+
+        data["corpus"]["symbols"] = symbols
         corpora.append(data)
 
         # Add system corpora to elf symbols
