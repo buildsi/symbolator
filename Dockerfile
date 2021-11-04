@@ -10,4 +10,4 @@ ENV PATH=/opt/conda/bin:$PATH
 WORKDIR /code
 ADD . /code
 RUN python setup.py install
-ENTRYPOINT /bin/bash
+ENTRYPOINT /opt/conda/bin/symbolator
