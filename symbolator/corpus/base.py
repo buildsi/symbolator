@@ -86,7 +86,7 @@ class JsonCorpusLoader:
         Given a json dump of a corpus (and system libraries) load into corpora
         """
         # If it isn't already loaded!
-        if not isinstance(content, dict):
+        if not isinstance(content, list):
             if not os.path.exists(content):
                 sys.exit("%s for loading corpora does not exist." % content)
             content = read_json(content)
