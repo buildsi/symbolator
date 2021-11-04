@@ -81,16 +81,19 @@ class JsonCorpusLoader:
             lookup[field] = corpus
         return lookup
 
-    def load(self, filename):
+    def load(self, content):
         """
         Given a json dump of a corpus (and system libraries) load into corpora
         """
-        if not os.path.exists(filename):
-            sys.exit("%s for loading corpora does not exist." % filename)
-        content = read_json(filename)
+        # If it isn't already loaded!
+        if not isinstance(content, dict):
+            if not os.path.exists(content):
+                sys.exit("%s for loading corpora does not exist." % content)
+            content = read_json(content)
+
         for entry in content:
             if "corpus" not in entry:
-                sys.exit("corpus key missing at top level of %s" % filename)
+                sys.exit("corpus key missing at top level!")
             corpus = entry["corpus"]
             filename = corpus["metadata"]["path"]
             name = corpus["metadata"]["corpus_name"]
