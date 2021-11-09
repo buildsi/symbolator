@@ -83,7 +83,8 @@ class JsonCorpusLoader:
 
     def load(self, content):
         """
-        Given a json dump of a corpus (and system libraries) load into corpora
+        Given a json dump of a corpus (and system libraries) load into corpora.
+        Make sure to split symbols to not include @
         """
         # If it isn't already loaded!
         if not isinstance(content, list):
@@ -120,8 +121,14 @@ class JsonCorpus(CorpusBase):
             sys.exit("Cannot create a json corpus without loaded content.")
 
         self.metadata = loaded.get("metadata", {})
-        self.symbols = loaded.get("symbols", {})
         self.elfheader = loaded.get("header", {})
         self.dynamic_tags = loaded.get("dynamic_tags", {})
         self.architecture = self.metadata.get("corpus_elf_machine")
         self.elfclass = self.metadata.get("corpus_elf_class")
+
+        # Ensure we remove @s from symbols - we don't care about compiler version
+        symbols = loaded.get("symbols", {})
+        self.symbols = {}
+        for name, meta in symbols.items():
+            name = name.split("@")[0]
+            self.symbols[name] = meta
