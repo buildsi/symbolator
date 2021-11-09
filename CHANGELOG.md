@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/buildsi/symbolator/tree/master) (0.0.x)
+ - Removing @@ for json loader so symbols can be spliced (0.0.18)
  - Adding support for splicing with libs or json (0.0.17)
  - add --globals option to generate to allow only global symbols
  - Be more forgiving to allow missing fields (0.0.16)
