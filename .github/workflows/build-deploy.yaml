@@ -1,0 +1,35 @@
+name: Build and Deploy containers
+
+on:
+  # Always test on pull request
+  pull_request: []
+
+  # Deploy on merge to main
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-test-containers:
+    runs-on: ubuntu-latest
+    name: Build Symbolator Container
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2        
+
+      - name: Build Symbolator Container
+        run: |
+            docker build -t ghcr.io/buildsi/symbolator-python .
+            version=$(docker run ghcr.io/buildsi/symbolator-python version)
+            printf "Found version ${version}"
+            docker tag ghcr.io/buildsi/symbolator-python:latest ghcr.io/buildsi/symbolator-python:${version}
+            docker images | grep symbolator
+
+      - name: Login and Deploy Test Container
+        if: (github.event_name != 'pull_request')
+        run: |
+            docker images
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
+            version=$(docker run ghcr.io/buildsi/symbolator-python version)
+            docker push ghcr.io/buildsi/symbolator-python:latest
+            docker push ghcr.io/buildsi/symbolator-python:${version}
